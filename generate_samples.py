@@ -80,10 +80,20 @@ def generate(
         res_json = response.json()
         text = res_json.get("text", "")
         # truth = res_json.get("truth", "")
-        reward = reward_fn(text, truth)
-        # print(reward)
+        #reward = reward_fn(text, truth)
+        payload = {
+    "candidates": [
+        text
+    ],
+    "references": [
+       truth
+    ]
+}
+        response = requests.post(url, json=payload)
+        res_json = response.json()["f1"]
+        reward = res_json
         return {"text": text, "reward": reward}
-        # return res_json
+        
 
     # Load JSONL dataset and prepare examples
     
