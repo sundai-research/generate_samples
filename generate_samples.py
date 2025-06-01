@@ -9,9 +9,10 @@ from transformers import AutoTokenizer
 # from bert_score import score
 from bert_score import BERTScorer
 import os
+import requests
 
 
-scorer = BERTScorer(lang="en")
+#scorer = BERTScorer(lang="en")
 # Default generation settings
 DEFAULT_MODEL_NAME = "Qwen/Qwen3-1.7B"
 DEFAULT_HOST = "localhost"
@@ -80,10 +81,21 @@ def generate(
         res_json = response.json()
         text = res_json.get("text", "")
         # truth = res_json.get("truth", "")
-        reward = reward_fn(text, truth)
-        # print(reward)
+        #reward = reward_fn(text, truth)
+        payload = {
+    "candidates": [
+        text
+    ],
+    "references": [
+       truth
+    ]
+}
+        url = "http://localhost:8001/bertscore"
+        response = requests.post(url, json=payload)
+        res_json = response.json()["f1"]
+        reward = res_json
         return {"text": text, "reward": reward}
-        # return res_json
+        
 
     # Load JSONL dataset and prepare examples
     
