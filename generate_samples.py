@@ -7,6 +7,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 # from bert_score import score
 from bert_score import BERTScorer
+import os
 
 
 scorer = BERTScorer(lang="en")
@@ -18,17 +19,16 @@ DEFAULT_PORT = 31319
 app = typer.Typer()
 
 
-def reward_fn(text: str) -> float:
+def reward_fn(text: str, truth: str) -> float:
     """
     Bert-based reward function to evaluate the quality of generated text.
 
     """
-    hard_coded_answer="There is a chronic need for more housing for prison leavers in Wales, according to a charity."
     # print(text)
     # exit
     # P, R, F1 = score([text], [hard_coded_answer], lang="en")
     # print(text)
-    P, R, F1 = scorer.score([text], [hard_coded_answer])
+    P, R, F1 = scorer.score([text], [truth])
 
    
 
@@ -74,12 +74,14 @@ def generate(
             )
         res_json = response.json()
         text = res_json.get("text", "")
-        reward = reward_fn(text)
+        truth = res_json.get("truth", "")
+        reward = reward_fn(text, truth)
         print(reward)
         return {"text": text, "reward": reward}
         # return res_json
 
     # Load JSONL dataset and prepare examples
+    
     dataset = load_dataset("json", data_files=input_path, split="train")
     examples = list(dataset)
 
@@ -112,5 +114,18 @@ def generate(
     typer.echo(f"Generation complete. Output saved to {output_path}")
 
 if __name__ == "__main__":
+    
+    # get list of all jsonl files in the current directory
+
+    jsonl_files = [f for f in os.listdir('.') if f.endswith('.jsonl')]
+    if jsonl_files:
+        typer.echo("Available JSONL files:")
+        for file in jsonl_files:
+            typer.echo(f"- {file}")
+    else:
+        typer.echo("No JSONL files found in the current directory.")
+        
+    print(jsonl_files)
     app()
+    
 
