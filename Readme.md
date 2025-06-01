@@ -7,6 +7,17 @@ pyenv local sglang-env
 
 ```
 
+## using uv
+
+- create virtual envs
+- install requirements
+  ```bash
+  pip install uv
+  uv pip install "sglang[all]>=0.4.6.post5"
+  uv pip install setuptools
+  uv pip install sglang-router
+  ```
+
 # serve a model
 
 ```shell=
