@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import numpy as np
 import typer
 import asyncio
 import json
@@ -28,7 +29,11 @@ def reward_fn(text: str, truth: str) -> float:
     # exit
     # P, R, F1 = score([text], [hard_coded_answer], lang="en")
     # print(text)
+    # print(text)
+    # print(truth)
+    # exit(0)
     P, R, F1 = scorer.score([text], [truth])
+    # exit(0)
 
    
 
@@ -52,7 +57,7 @@ def generate(
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     # Asynchronous helper to generate one response
-    async def _generate_one(text: str) -> str:
+    async def _generate_one(text: str, truth: str) -> str:
         messages = [{"role": "user", "content": text}]
         prompt = tokenizer.apply_chat_template(
             messages,
@@ -74,9 +79,9 @@ def generate(
             )
         res_json = response.json()
         text = res_json.get("text", "")
-        truth = res_json.get("truth", "")
+        # truth = res_json.get("truth", "")
         reward = reward_fn(text, truth)
-        print(reward)
+        # print(reward)
         return {"text": text, "reward": reward}
         # return res_json
 
@@ -87,7 +92,7 @@ def generate(
 
     # Build and run async tasks
     tasks = [
-        _generate_one(example.get("text", ""))
+        _generate_one(example.get("text", ""), example.get("truth", ""))
         for example in examples
         for _ in range(num_responses_per_question)
     ]
@@ -108,6 +113,8 @@ def generate(
             idx += 1
 
     # Write to output JSONL
+    reward_variance = np.var([obj["reward"] for obj in output_objs])
+    print(f"Reward variance: {reward_variance} for {output_path}")
     with open(output_path, "w") as f:
         for obj in output_objs:
             f.write(json.dumps(obj) + "\n")
