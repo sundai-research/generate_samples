@@ -1,0 +1,4 @@
+{
+  "text": "Task: Summarize the following newsletter article in exactly one sentence that captures its core message.\n\nInput Article:\nThe 48-year-old former Arsenal goalkeeper played for the Royals for four years.\nHe was appointed youth academy director in 2000 and has been director of football since 2003.\nA West Brom statement said: \"He played a key role in the Championship club twice winning promotion to the Premier League in 2006 and 2012.\"",
+  "truth": "West Brom have appointed Nicky Hammond as technical director, ending his 20-year association with Reading."
+}
