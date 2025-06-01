@@ -5,13 +5,34 @@ import json
 import httpx
 from datasets import load_dataset
 from transformers import AutoTokenizer
+# from bert_score import score
+from bert_score import BERTScorer
 
+
+scorer = BERTScorer(lang="en")
 # Default generation settings
 DEFAULT_MODEL_NAME = "Qwen/Qwen3-1.7B"
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 31319
 
 app = typer.Typer()
+
+
+def reward_fn(text: str) -> float:
+    """
+    Bert-based reward function to evaluate the quality of generated text.
+
+    """
+    hard_coded_answer="There is a chronic need for more housing for prison leavers in Wales, according to a charity."
+    # print(text)
+    # exit
+    # P, R, F1 = score([text], [hard_coded_answer], lang="en")
+    # print(text)
+    P, R, F1 = scorer.score([text], [hard_coded_answer])
+
+   
+
+    return F1.item()
 
 @app.command()
 def generate(
@@ -39,7 +60,7 @@ def generate(
             add_generation_prompt=True,
             enable_thinking=enable_thinking,
         )
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
                 f"http://{host}:{port}/generate",
                 json={
@@ -54,6 +75,7 @@ def generate(
         res_json = response.json()
         text = res_json.get("text", "")
         reward = reward_fn(text)
+        print(reward)
         return {"text": text, "reward": reward}
         # return res_json
 
