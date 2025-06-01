@@ -52,7 +52,9 @@ def generate(
                 },
             )
         res_json = response.json()
-        return res_json.get("text", "")
+        text = res_json.get("text", "")
+        reward = reward_fn(text)
+        return {"text": text, "reward": reward}
         # return res_json
 
     # Load JSONL dataset and prepare examples
@@ -76,7 +78,8 @@ def generate(
         for _ in range(num_responses_per_question):
             output_objs.append({
                 "text": example.get("text", ""),
-                "answer": responses[idx],
+                "answer": responses[idx]["text"],
+                "reward": responses[idx]["reward"],
             })
             idx += 1
 
