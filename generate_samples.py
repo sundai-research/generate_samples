@@ -115,17 +115,6 @@ def generate(
 
 if __name__ == "__main__":
     
-    # get list of all jsonl files in the current directory
-
-    jsonl_files = [f for f in os.listdir('.') if f.endswith('.jsonl')]
-    if jsonl_files:
-        typer.echo("Available JSONL files:")
-        for file in jsonl_files:
-            typer.echo(f"- {file}")
-    else:
-        typer.echo("No JSONL files found in the current directory.")
-        
-    print(jsonl_files)
     app()
     
 
