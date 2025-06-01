@@ -9,7 +9,7 @@ pyenv local sglang-env
 
 ## using uv
 
-- create virtual envs
+- create virtual env
 - install requirements
   ```bash
   pip install uv
