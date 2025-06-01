@@ -21,7 +21,7 @@ def generate(
     num_proc: int = typer.Option(1, "--num-proc", "-p", help="Number of parallel processes"),
     host: str = typer.Option(DEFAULT_HOST, "--host", help="Generation endpoint host"),
     port: int = typer.Option(DEFAULT_PORT, "--port", help="Generation endpoint port"),
-    temperature: float = typer.Option(0.0, "--temperature", help="Sampling temperature"),
+    temperature: float = typer.Option(1.0, "--temperature", help="Sampling temperature"),
     max_new_tokens: int = typer.Option(8192, "--max-new-tokens", help="Maximum number of new tokens to generate"),
     enable_thinking: bool = typer.Option(True, "--thinking/--no-thinking", help="Enable thinking mode"),
     num_responses_per_question: int = typer.Option(32, "--num-responses-per-question", "-n", help="Number of responses per question"),
@@ -52,8 +52,8 @@ def generate(
                 },
             )
         res_json = response.json()
-        # return res_json.get("text", "")
-        return res_json
+        return res_json.get("text", "")
+        # return res_json
 
     # Load JSONL dataset and prepare examples
     dataset = load_dataset("json", data_files=input_path, split="train")
@@ -69,7 +69,6 @@ def generate(
     async def _run_all_tasks():
         return await asyncio.gather(*tasks)
     responses = asyncio.run(_run_all_tasks())
-    from IPython import embed; embed()
     # Assemble output objects
     output_objs = []
     idx = 0
