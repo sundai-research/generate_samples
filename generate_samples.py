@@ -9,9 +9,10 @@ from transformers import AutoTokenizer
 # from bert_score import score
 from bert_score import BERTScorer
 import os
+import requests
 
 
-scorer = BERTScorer(lang="en")
+#scorer = BERTScorer(lang="en")
 # Default generation settings
 DEFAULT_MODEL_NAME = "Qwen/Qwen3-1.7B"
 DEFAULT_HOST = "localhost"
@@ -89,6 +90,7 @@ def generate(
        truth
     ]
 }
+        url = "http://localhost:8001/bertscore"
         response = requests.post(url, json=payload)
         res_json = response.json()["f1"]
         reward = res_json
